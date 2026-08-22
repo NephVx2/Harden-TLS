@@ -1,5 +1,6 @@
 # Harden-TLS_Win11
 
+🇬🇧 [English version](README.md)
 
 Un script PowerShell petit et cible qui desactive TLS 1.0 et TLS 1.1 au niveau SCHANNEL de Windows — rien d'autre. Lecture avant ecriture : un controle deja conforme n'est jamais reecrit, chaque run affiche l'etat actuel exact avant de toucher a quoi que ce soit, et un rapport JSON suit le score au fil des executions.
 

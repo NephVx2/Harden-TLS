@@ -134,17 +134,49 @@ Without this step, hardening SCHANNEL alone leaves a real, documented blind spot
 
 ## Getting started — your first run
 
-1. **Download** `Harden-TLS.ps1` from this repository.
-2. **Right-click the file → "Run with PowerShell"**, or open a PowerShell window **as Administrator** and run it from there. Running without Administrator rights still works, but only in read-only mode.
-3. With no options at all, the script opens straight into its **interactive menu** — you don't need to memorize any command-line flags to get started. From there you can:
-   - View the current state of every control (nothing is changed).
-   - Preview exactly what would change with a dry run.
-   - Apply the hardening for real.
-   - Export a report.
-4. **Restart the computer** once you're done, so SCHANNEL picks up the new settings.
-5. *(Optional but recommended)* A few days later, or after any Windows Update, re-run the script — it will show everything as already compliant and make no changes, confirming nothing reset your hardening.
+Follow these steps in order. Every command below is safe to copy-paste as-is — none of the first three actually change anything on your PC.
 
-If you'd rather skip the menu and drive everything from the command line, see the options below.
+1. **Copy `Harden-TLS.ps1`** onto the target machine.
+
+2. **Open PowerShell as Administrator.** You can still run the script without Administrator rights — it just switches to read-only mode and can't apply anything (steps 3 and 4 below work fine either way).
+
+3. **Run the self-test first.** This writes nothing and changes nothing on your system — it only checks that the script itself is working correctly on your machine:
+
+   ```powershell
+   .\Harden-TLS.ps1 -SelfTest
+   ```
+
+   This runs the script's internal test suite (scoring logic, report handling — no registry access at all). Exit code `0` = everything passed.
+
+4. **Preview what would change**, still without writing anything:
+
+   ```powershell
+   .\Harden-TLS.ps1 -DryRun
+   ```
+
+   This lists every setting that isn't compliant yet and exactly what would be written to fix it — nothing is actually applied.
+
+5. **Launch the interactive menu** — just run the script with no options at all:
+
+   ```powershell
+   .\Harden-TLS.ps1
+   ```
+
+   From the menu, go in this order:
+   - **Choose `1`** first — *"Afficher l'état détaillé"* (view the detailed state). This is read-only: it just shows you exactly where your PC currently stands, control by control, before anything is touched.
+   - Once you're comfortable with what's about to change, **choose `2`** — *"Appliquer le durcissement"* (apply the hardening). Only what's actually missing gets changed; anything already compliant is left alone.
+
+6. **Restart the computer** once you're done, so SCHANNEL picks up the new settings.
+
+7. **For scheduled tasks or multi-machine deployment**, skip the menu entirely and run silently, generating a report you can check afterward instead of watching the console live:
+
+   ```powershell
+   .\Harden-TLS.ps1 -Silent -Html
+   ```
+
+8. *(Optional but recommended)* A few days later, or after any Windows Update, re-run the script — it will show everything as already compliant and make no changes, confirming nothing reset your hardening.
+
+If you'd rather skip the menu and drive everything from the command line, see every option below.
 
 ## Every option, explained
 

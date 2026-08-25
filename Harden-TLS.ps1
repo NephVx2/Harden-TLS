@@ -1,4 +1,4 @@
-<#
+﻿<#
     Harden-TLS — Idempotent TLS/SCHANNEL hardening for Windows 11
     ================================================================
     Protocols, cipher suites, hashes, Diffie-Hellman & .NET Strong Crypto —
@@ -109,8 +109,8 @@
 .NOTES
     Projet  : Harden-TLS
     Auteur  : Nephren (github.com/NephVx2)
-    Version : 2.2.1
-    Date    : 2026-08-24
+    Version : 2.2.2
+    Date    : 2026-08-25
 
     CHANGELOG v1.0 :
       Création initiale. Désactivation ciblée de TLS 1.0 et TLS 1.1 uniquement
@@ -282,6 +282,25 @@
         10→11. Lecture désormais via Win32_OperatingSystem (WMI/CIM), fiable
         dans tous les cas observés ; repli sur le registre uniquement si WMI
         est indisponible.
+
+    CHANGELOG v2.2.2 :
+      [FIX CRITIQUE] Le script refusait de se lancer sous Windows PowerShell
+        5.1 ("Jeton inattendu", "Accolade fermante manquante", etc.), alors
+        qu'il fonctionnait normalement sous PowerShell 7 (pwsh). Cause :
+        le fichier était enregistré en UTF-8 SANS marqueur BOM. PowerShell 7
+        lit toujours les .ps1 en UTF-8 par défaut, BOM ou pas — mais Windows
+        PowerShell 5.1 se fie à la présence du BOM pour détecter l'encodage
+        et, en son absence, retombe sur l'ANSI/Windows-1252 du système. Tous
+        les caractères multi-octets ajoutés en v2.2.0 (icônes ✓ ! ✗ · »,
+        cadres de bannière ╔═╗║╚╝, séparateurs │─) étaient alors mal
+        décodés en plusieurs caractères parasites chacun, cassant la syntaxe
+        PowerShell (guillemets et accolades comptés en trop). Corrigé en
+        réenregistrant le fichier en UTF-8 AVEC BOM — transparent pour
+        PowerShell 7, qui l'ignore, et rend le fichier de nouveau lisible
+        par PowerShell 5.1. Attention pour la suite : toute réédition de ce
+        fichier hors de cet environnement (Bloc-notes, VS Code mal
+        configuré, etc.) doit impérativement conserver l'enregistrement en
+        "UTF-8 avec BOM" sous peine de réintroduire ce bug.
 #>
 
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = "Medium")]
@@ -306,7 +325,7 @@ $ErrorActionPreference = "Stop"
 # ──────────────────────────────────────────────
 #  CONFIGURATION
 # ──────────────────────────────────────────────
-$ScriptVersion = "2.2.1"
+$ScriptVersion = "2.2.2"
 $SchannelRoot  = "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL"
 $SchannelBase  = "$SchannelRoot\Protocols"          # conservé pour compat (protocoles)
 $ProtocolBase  = $SchannelBase
@@ -2039,17 +2058,12 @@ if (-not $Silent) {
     $null = Read-Host
 }
 
-# [Note sécurité v2.0] Signature Authenticode retirée : le contenu du fichier
-# a changé, l'ancienne signature (CN=Nephren PowerShell Code Signing) ne
-# correspondrait plus au hash. Re-signer via Manage-ScriptSignatures.ps1
-# avant tout déploiement en flotte — un script non signé (ou signé mais
-# invalide) peut être bloqué par une politique d'exécution AllSigned.
 
 # SIG # Begin signature block
 # MIIFwgYJKoZIhvcNAQcCoIIFszCCBa8CAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAbqHG2EBpHXY3O
-# 4ZZSh4Ul0d86QYqsNYZEAv+vb+aaYKCCAygwggMkMIICDKADAgECAhB6X4r8AlBU
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCD6lkIUmUW76vXv
+# wRm4libSiMPoOa6Tz2fmE2gpTuFYKqCCAygwggMkMIICDKADAgECAhB6X4r8AlBU
 # p0MV3JpMuQ6sMA0GCSqGSIb3DQEBCwUAMCoxKDAmBgNVBAMMH05lcGhyZW4gUG93
 # ZXJTaGVsbCBDb2RlIFNpZ25pbmcwHhcNMjYwNzA0MDIzMzIwWhcNMzEwNzA0MDI0
 # MzIwWjAqMSgwJgYDVQQDDB9OZXBocmVuIFBvd2VyU2hlbGwgQ29kZSBTaWduaW5n
@@ -2070,11 +2084,11 @@ if (-not $Silent) {
 # cmVuIFBvd2VyU2hlbGwgQ29kZSBTaWduaW5nAhB6X4r8AlBUp0MV3JpMuQ6sMA0G
 # CWCGSAFlAwQCAQUAoIGEMBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZI
 # hvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcC
-# ARUwLwYJKoZIhvcNAQkEMSIEIKPSB0jC8WB6QbL8gT/NwpGrTKWkuncc5KjGZSop
-# MG9FMA0GCSqGSIb3DQEBAQUABIIBADypafCVZLX+4p24agXBs/9lBFnx06Ntk1f1
-# aTz4CHeh+po0dLEZBIrF74bJln19VyZ2YyUTqgRxW5fJgP+bL0ywywsGK1NnKEsT
-# SMNo3Waj2FZ3wFTaKlf+pgvQ8jqM8ZkbSgk4ttXfpGbNYYM8UrKgruOo8BMTq1sd
-# kKuRRF0nuOCayH4gJsaF4KMsYSfQrRQN+jdHzMJsHGg353GvokFfJPuzH9Wu7jAc
-# sPVcJAMa/9xXYfpejsVh1SeWbR50cXrUINRRNiY6fJ0KhVNN/UjB2Xw9sOUT8wKi
-# qhcS+bAycNVGp7QYhm/s8y96qEuj7m4I6xzTgjIZaeynw11RhBs=
+# ARUwLwYJKoZIhvcNAQkEMSIEIJWnSSG1twPJ3vGkzKsPrTLwbiMBkV9NJQjN1yqM
+# ZGf8MA0GCSqGSIb3DQEBAQUABIIBAAPZa/K4bNLP9V127TXgZ1K0zcoMqp02cz3m
+# ku7zUQC1UU6kW4XU1MtAGkEbYMtaXBuuAk5BglNBAHpgEm+voipoINEYB5rMhEVA
+# D9xt7GFMAKNr6FRMccL9te/EU/6wT+5nTLF2T7eH0io60QlDiiSjgPAPYWociOfx
+# QWySs10O9Ndn+uXN2ohJ20gHTUA1UOO/HHZyWbpdITLUonzvxS1MJZj2pjxmoSJl
+# A0kHizqfe3DENQT8F7mAjB3J6D4WgIGzQSck0ESxqHo+vq91BYgpuVFdUHdJOUXn
+# rJkbWYaZJ6TYkcKbfIQYaSnoyEOgyfbPCtA0AhzlLlwUKgTIsb0=
 # SIG # End signature block

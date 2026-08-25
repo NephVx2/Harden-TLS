@@ -134,17 +134,49 @@ Sans cette étape, durcir uniquement SCHANNEL laisse un angle mort réel et docu
 
 ## Premiers pas — votre premier lancement
 
-1. **Téléchargez** `Harden-TLS.ps1` depuis ce dépôt.
-2. **Clic droit sur le fichier → "Exécuter avec PowerShell"**, ou ouvrez une fenêtre PowerShell **en tant qu'administrateur** et lancez-le depuis là. Le lancer sans droits administrateur fonctionne aussi, mais uniquement en mode lecture seule.
-3. Sans aucun paramètre, le script s'ouvre directement sur son **menu interactif** — inutile de mémoriser la moindre commande pour démarrer. Depuis ce menu, vous pouvez :
-   - Consulter l'état actuel de chaque contrôle (rien n'est modifié).
-   - Prévisualiser exactement ce qui changerait, sans rien appliquer.
-   - Appliquer réellement le durcissement.
-   - Exporter un rapport.
-4. **Redémarrez l'ordinateur** une fois terminé, pour que SCHANNEL prenne en compte les nouveaux réglages.
-5. *(Optionnel mais recommandé)* Quelques jours plus tard, ou après une mise à jour Windows, relancez le script — il affichera tout comme déjà conforme et n'appliquera aucun changement, confirmant que rien n'a réinitialisé votre durcissement.
+Suivez ces étapes dans l'ordre. Chaque commande ci-dessous peut être copiée-collée telle quelle sans risque — les trois premières ne modifient rien du tout sur votre PC.
 
-Si vous préférez vous passer du menu et tout piloter en ligne de commande, voir les paramètres ci-dessous.
+1. **Copiez `Harden-TLS.ps1`** sur la machine cible.
+
+2. **Ouvrez PowerShell en tant qu'administrateur.** Vous pouvez aussi lancer le script sans droits administrateur — il bascule alors en mode lecture seule et ne peut rien appliquer (les étapes 3 et 4 ci-dessous fonctionnent dans les deux cas).
+
+3. **Lancez d'abord le self-test.** Il n'écrit rien et ne modifie rien sur votre système — il vérifie seulement que le script lui-même fonctionne correctement sur votre machine :
+
+   ```powershell
+   .\Harden-TLS.ps1 -SelfTest
+   ```
+
+   Cela exécute la suite de tests internes du script (logique de notation, gestion des rapports — aucun accès au registre). Code de sortie `0` = tout est passé.
+
+4. **Prévisualisez ce qui changerait**, toujours sans rien écrire :
+
+   ```powershell
+   .\Harden-TLS.ps1 -DryRun
+   ```
+
+   Cela liste chaque réglage qui n'est pas encore conforme et ce qui serait précisément écrit pour le corriger — rien n'est réellement appliqué.
+
+5. **Lancez le menu interactif** — exécutez simplement le script sans aucun paramètre :
+
+   ```powershell
+   .\Harden-TLS.ps1
+   ```
+
+   Depuis le menu, procédez dans cet ordre :
+   - **Choisissez `1`** en premier — *"Afficher l'état détaillé"*. C'est en lecture seule : cela vous montre exactement où en est votre PC actuellement, contrôle par contrôle, avant que quoi que ce soit ne soit touché.
+   - Une fois que vous êtes à l'aise avec ce qui va changer, **choisissez `2`** — *"Appliquer le durcissement"*. Seul ce qui manque réellement est modifié ; tout ce qui est déjà conforme est laissé tel quel.
+
+6. **Redémarrez l'ordinateur** une fois terminé, pour que SCHANNEL prenne en compte les nouveaux réglages.
+
+7. **Pour une tâche planifiée ou un déploiement sur plusieurs machines**, passez directement en mode silencieux avec génération d'un rapport à consulter après coup, plutôt que de suivre la console en direct :
+
+   ```powershell
+   .\Harden-TLS.ps1 -Silent -Html
+   ```
+
+8. *(Optionnel mais recommandé)* Quelques jours plus tard, ou après une mise à jour Windows, relancez le script — il affichera tout comme déjà conforme et n'appliquera aucun changement, confirmant que rien n'a réinitialisé votre durcissement.
+
+Si vous préférez vous passer du menu et tout piloter en ligne de commande, voir tous les paramètres ci-dessous.
 
 ## Tous les paramètres, expliqués
 

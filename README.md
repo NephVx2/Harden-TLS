@@ -2,7 +2,7 @@
 
 **Idempotent TLS/SCHANNEL hardening for Windows 11 — with plain-English explanations, visual reports, and one-command rollback.**
 
-[🇫🇷 Lire en français](README.fr.md)
+[🇫🇷 Lire en français](README_FRENCH.md)
 
 > Disables outdated, insecure encryption technology built into Windows so that nothing on your PC — browsers excluded, they manage this themselves — can accidentally use it. Safe to run more than once. Safe to undo.
 

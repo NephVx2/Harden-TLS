@@ -8,8 +8,20 @@
 
 ---
 
+## Screenshots
+
+<p>
+  <img src="https://raw.githubusercontent.com/NephVx2/Harden-TLS/main/screenshots/01-banner-harden-tls.png" alt="Interactive menu — compliance overview" width="49%">
+  <img src="https://raw.githubusercontent.com/NephVx2/Harden-TLS/main/screenshots/04-html-preview.png" alt="Self-contained HTML report" width="49%">
+</p>
+
+*Interactive menu (left) and the self-contained HTML report (right). More screenshots — detailed read-only state, HTML export from the console — in the [`screenshots/`](https://github.com/NephVx2/Harden-TLS/tree/main/screenshots) folder.*
+
+---
+
 ## Table of contents
 
+- [Screenshots](#screenshots)
 - [Why this script exists](#why-this-script-exists)
 - [What this script actually does](#what-this-script-actually-does)
 - [Background: what is TLS, and why does any of this matter?](#background-what-is-tls-and-why-does-any-of-this-matter)
@@ -163,8 +175,8 @@ Follow these steps in order. Every command below is safe to copy-paste as-is —
    ```
 
    From the menu, go in this order:
-   - **Choose `1`** first — *"Afficher l'état détaillé"* (view the detailed state). This is read-only: it just shows you exactly where your PC currently stands, control by control, before anything is touched.
-   - Once you're comfortable with what's about to change, **choose `2`** — *"Appliquer le durcissement"* (apply the hardening). Only what's actually missing gets changed; anything already compliant is left alone.
+   - **Choose `1`** first — *"Show detailed state (read-only)"*. This is read-only: it just shows you exactly where your PC currently stands, control by control, before anything is touched.
+   - Once you're comfortable with what's about to change, **choose `2`** — *"Apply hardening (only what's missing)"*. Only what's actually missing gets changed; anything already compliant is left alone.
 
 6. **Restart the computer** once you're done, so SCHANNEL picks up the new settings.
 
@@ -222,6 +234,8 @@ Running the script with no arguments (or with `-Menu`) opens a menu that always 
 
 Plus a toggle for dry-run mode and a quit option. It's the easiest way to explore the script safely before trusting it with real changes.
 
+**First time here?** Start with **`1`** to see where you currently stand (read-only, changes nothing), then **`2`** once you're ready to apply the hardening for real.
+
 ## Undoing everything (`-Undo`)
 
 If a particular device or piece of legacy software turns out to be incompatible with this hardening, run:
@@ -234,7 +248,7 @@ This removes exactly what the script itself created — the dedicated protocol/c
 
 ## Reports (JSON & HTML)
 
-Every run writes a JSON report to `Desktop\Rapports_Maintenance\TLS\`, following the same convention used across the rest of this author's script suite — useful if you're also running the companion dashboard/monitoring scripts. Add `-Html` for a visual, shareable report you can open directly in a browser, with no dependencies.
+Every run writes a JSON report to `Desktop\Maintenance_Reports\Harden-TLS\`, following the same convention used across the rest of this author's script suite — useful if you're also running the companion dashboard/monitoring scripts. Add `-Html` for a visual, shareable report you can open directly in a browser, with no dependencies.
 
 ## Group Policy / domain-joined machines
 

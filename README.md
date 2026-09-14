@@ -186,7 +186,7 @@ Follow these steps in order. Every command below is safe to copy-paste as-is —
    .\Harden-TLS.ps1 -Silent -Html
    ```
 
-8. *(Optional but recommended)* A few days later, or after any Windows Update, re-run the script — it will show everything as already compliant and make no changes, confirming nothing reset your hardening.
+8. *(Optional but recommended)* A few days later, or after any Windows Update, re-run the script — it will show everything as already compliant and make no changes, confirming nothing reset your hardening. If you also run [Check-Security](https://github.com/NephVx2/Check-Security) (a companion read-only audit script by the same author), its `-Category "TLS/SCHANNEL"` section mirrors every check Harden-TLS controls — protocols, ciphers, hashes, Diffie-Hellman, .NET, and GPO conflicts — so a quick periodic Check-Security run can confirm nothing has regressed without opening Harden-TLS at all. It's read-only, though: if it does flag something, you'll still need to run Harden-TLS itself to fix it.
 
 If you'd rather skip the menu and drive everything from the command line, see every option below.
 

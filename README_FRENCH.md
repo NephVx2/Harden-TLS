@@ -8,8 +8,20 @@
 
 ---
 
+## Captures d'écran
+
+<p>
+  <img src="https://raw.githubusercontent.com/NephVx2/Harden-TLS/main/screenshots/01-banner-harden-tls.png" alt="Menu interactif — vue d'ensemble de la conformité" width="49%">
+  <img src="https://raw.githubusercontent.com/NephVx2/Harden-TLS/main/screenshots/04-html-preview.png" alt="Rapport HTML autonome" width="49%">
+</p>
+
+*Le menu interactif (à gauche) et le rapport HTML autonome (à droite). D'autres captures — état détaillé en lecture seule, export HTML depuis la console — dans le dossier [`screenshots/`](https://github.com/NephVx2/Harden-TLS/tree/main/screenshots).*
+
+---
+
 ## Sommaire
 
+- [Captures d'écran](#captures-décran)
 - [Pourquoi ce script existe](#pourquoi-ce-script-existe)
 - [Ce que fait réellement ce script](#ce-que-fait-réellement-ce-script)
 - [Comprendre le sujet : qu'est-ce que TLS, et pourquoi est-ce important ?](#comprendre-le-sujet--quest-ce-que-tls-et-pourquoi-est-ce-important-)
@@ -163,8 +175,8 @@ Suivez ces étapes dans l'ordre. Chaque commande ci-dessous peut être copiée-c
    ```
 
    Depuis le menu, procédez dans cet ordre :
-   - **Choisissez `1`** en premier — *"Afficher l'état détaillé"*. C'est en lecture seule : cela vous montre exactement où en est votre PC actuellement, contrôle par contrôle, avant que quoi que ce soit ne soit touché.
-   - Une fois que vous êtes à l'aise avec ce qui va changer, **choisissez `2`** — *"Appliquer le durcissement"*. Seul ce qui manque réellement est modifié ; tout ce qui est déjà conforme est laissé tel quel.
+   - **Choisissez `1`** en premier — à l'écran : *"Show detailed state (read-only)"* (afficher l'état détaillé, lecture seule). Cela vous montre exactement où en est votre PC actuellement, contrôle par contrôle, avant que quoi que ce soit ne soit touché.
+   - Une fois que vous êtes à l'aise avec ce qui va changer, **choisissez `2`** — à l'écran : *"Apply hardening (only what's missing)"* (appliquer le durcissement, uniquement ce qui manque). Seul ce qui manque réellement est modifié ; tout ce qui est déjà conforme est laissé tel quel.
 
 6. **Redémarrez l'ordinateur** une fois terminé, pour que SCHANNEL prenne en compte les nouveaux réglages.
 
@@ -212,6 +224,8 @@ Exemples :
 
 Lancer le script sans argument (ou avec `-Menu`) ouvre un menu qui affiche toujours votre niveau de conformité actuel en haut, puis vous permet de :
 
+*(Note : l'interface du script elle-même — console et rapport HTML — est entièrement en anglais, y compris pour cette version française du README. La liste ci-dessous est la traduction de ce que vous verrez à l'écran.)*
+
 1. Afficher l'état détaillé de chaque contrôle (lecture seule)
 2. Appliquer le durcissement (uniquement ce qui manque)
 3. Forcer une réapplication complète (même si déjà conforme)
@@ -221,6 +235,8 @@ Lancer le script sans argument (ou avec `-Menu`) ouvre un menu qui affiche toujo
 7. Exporter un rapport HTML
 
 Ainsi qu'un bouton pour activer/désactiver le mode simulation, et une option pour quitter. C'est la façon la plus simple d'explorer le script en toute sécurité avant de lui faire confiance pour des modifications réelles.
+
+**Première visite ?** Commencez par **`1`** pour voir où vous en êtes actuellement (lecture seule, rien n'est modifié), puis **`2`** une fois prêt à appliquer réellement le durcissement.
 
 ## Tout annuler (`-Undo`)
 
@@ -234,7 +250,7 @@ Cela retire exactement ce que le script a lui-même créé — les clés de regi
 
 ## Rapports (JSON & HTML)
 
-Chaque exécution écrit un rapport JSON dans `Desktop\Rapports_Maintenance\TLS\`, suivant la même convention que le reste de la suite de scripts de cet auteur — utile si vous utilisez également les scripts de tableau de bord/supervision associés. Ajoutez `-Html` pour un rapport visuel et partageable, consultable directement dans un navigateur, sans aucune dépendance.
+Chaque exécution écrit un rapport JSON dans `Desktop\Maintenance_Reports\Harden-TLS\`, suivant la même convention que le reste de la suite de scripts de cet auteur — utile si vous utilisez également les scripts de tableau de bord/supervision associés. Ajoutez `-Html` pour un rapport visuel et partageable, consultable directement dans un navigateur, sans aucune dépendance.
 
 ## Stratégie de groupe / postes joints à un domaine
 

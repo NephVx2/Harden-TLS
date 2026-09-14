@@ -186,7 +186,7 @@ Suivez ces étapes dans l'ordre. Chaque commande ci-dessous peut être copiée-c
    .\Harden-TLS.ps1 -Silent -Html
    ```
 
-8. *(Optionnel mais recommandé)* Quelques jours plus tard, ou après une mise à jour Windows, relancez le script — il affichera tout comme déjà conforme et n'appliquera aucun changement, confirmant que rien n'a réinitialisé votre durcissement.
+8. *(Optionnel mais recommandé)* Quelques jours plus tard, ou après une mise à jour Windows, relancez le script — il affichera tout comme déjà conforme et n'appliquera aucun changement, confirmant que rien n'a réinitialisé votre durcissement. Si vous utilisez également [Check-Security](https://github.com/NephVx2/Check-Security) (un script d'audit en lecture seule du même auteur), sa section `-Category "TLS/SCHANNEL"` reprend exactement les mêmes contrôles que Harden-TLS — protocoles, chiffrements, hachages, Diffie-Hellman, .NET, et conflits GPO — ce qui permet de vérifier rapidement que rien n'a régressé sans avoir à relancer Harden-TLS. Attention, c'est en lecture seule : s'il détecte un problème, il faudra tout de même relancer Harden-TLS pour le corriger.
 
 Si vous préférez vous passer du menu et tout piloter en ligne de commande, voir tous les paramètres ci-dessous.
 

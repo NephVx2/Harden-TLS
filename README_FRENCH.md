@@ -146,13 +146,33 @@ Sans cette étape, durcir uniquement SCHANNEL laisse un angle mort réel et docu
 
 ## Premiers pas — votre premier lancement
 
-Suivez ces étapes dans l'ordre. Chaque commande ci-dessous peut être copiée-collée telle quelle sans risque — les trois premières ne modifient rien du tout sur votre PC.
+Suivez ces étapes dans l'ordre. Chaque commande ci-dessous peut être copiée-collée telle quelle sans risque — les quatre premières ne modifient rien du tout sur votre PC.
 
 1. **Copiez `Harden-TLS.ps1`** sur la machine cible.
 
-2. **Ouvrez PowerShell en tant qu'administrateur.** Vous pouvez aussi lancer le script sans droits administrateur — il bascule alors en mode lecture seule et ne peut rien appliquer (les étapes 3 et 4 ci-dessous fonctionnent dans les deux cas).
+2. **Ouvrez PowerShell en tant qu'administrateur.**
 
-3. **Lancez d'abord le self-test.** Il n'écrit rien et ne modifie rien sur votre système — il vérifie seulement que le script lui-même fonctionne correctement sur votre machine :
+   Puis placez-vous dans le dossier qui contient le script (adapter le chemin ; garder les guillemets s'il contient des espaces) :
+
+   ```powershell
+   cd "$HOME\Downloads"
+   ```
+
+3. **Débloquez le script** s'il a été téléchargé depuis Internet. Windows marque les fichiers téléchargés, et la politique d'exécution de PowerShell (`RemoteSigned`, par exemple) refuse de lancer un script marqué. Dans cette même fenêtre Administrateur, depuis le dossier du script :
+
+   ```powershell
+   Unblock-File .\Harden-TLS.ps1
+   ```
+
+   Si PowerShell indique plutôt que l'exécution de scripts est désactivée sur ce système (la politique par défaut de Windows est `Restricted`), autorisez d'abord les scripts pour le compte courant (la modification ne s'applique qu'à ce compte, pas à toute la machine) :
+
+   ```powershell
+   Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+   ```
+
+   Toujours bloqué ? Voir le [guide pas à pas](https://github.com/NephVx2/Script-blocked-Look-at-this/blob/main/README_POWERSHELL_FRENCH.md).
+
+4. **Lancez d'abord le self-test.** Il n'écrit rien et ne modifie rien sur votre système — il vérifie seulement que le script lui-même fonctionne correctement sur votre machine :
 
    ```powershell
    .\Harden-TLS.ps1 -SelfTest
@@ -160,7 +180,7 @@ Suivez ces étapes dans l'ordre. Chaque commande ci-dessous peut être copiée-c
 
    Cela exécute la suite de tests internes du script (logique de notation, gestion des rapports — aucun accès au registre). Code de sortie `0` = tout est passé.
 
-4. **Prévisualisez ce qui changerait**, toujours sans rien écrire :
+5. **Prévisualisez ce qui changerait**, toujours sans rien écrire :
 
    ```powershell
    .\Harden-TLS.ps1 -DryRun
@@ -168,7 +188,7 @@ Suivez ces étapes dans l'ordre. Chaque commande ci-dessous peut être copiée-c
 
    Cela liste chaque réglage qui n'est pas encore conforme et ce qui serait précisément écrit pour le corriger — rien n'est réellement appliqué.
 
-5. **Lancez le menu interactif** — exécutez simplement le script sans aucun paramètre :
+6. **Lancez le menu interactif** — exécutez simplement le script sans aucun paramètre :
 
    ```powershell
    .\Harden-TLS.ps1
@@ -178,15 +198,15 @@ Suivez ces étapes dans l'ordre. Chaque commande ci-dessous peut être copiée-c
    - **Choisissez `1`** en premier — à l'écran : *"Show detailed state (read-only)"* (afficher l'état détaillé, lecture seule). Cela vous montre exactement où en est votre PC actuellement, contrôle par contrôle, avant que quoi que ce soit ne soit touché.
    - Une fois que vous êtes à l'aise avec ce qui va changer, **choisissez `2`** — à l'écran : *"Apply hardening (only what's missing)"* (appliquer le durcissement, uniquement ce qui manque). Seul ce qui manque réellement est modifié ; tout ce qui est déjà conforme est laissé tel quel.
 
-6. **Redémarrez l'ordinateur** une fois terminé, pour que SCHANNEL prenne en compte les nouveaux réglages.
+7. **Redémarrez l'ordinateur** une fois terminé, pour que SCHANNEL prenne en compte les nouveaux réglages.
 
-7. **Pour une tâche planifiée ou un déploiement sur plusieurs machines**, passez directement en mode silencieux avec génération d'un rapport à consulter après coup, plutôt que de suivre la console en direct :
+8. **Pour une tâche planifiée ou un déploiement sur plusieurs machines**, passez directement en mode silencieux avec génération d'un rapport à consulter après coup, plutôt que de suivre la console en direct :
 
    ```powershell
    .\Harden-TLS.ps1 -Silent -Html
    ```
 
-8. *(Optionnel mais recommandé)* Quelques jours plus tard, ou après une mise à jour Windows, relancez le script — il affichera tout comme déjà conforme et n'appliquera aucun changement, confirmant que rien n'a réinitialisé votre durcissement. Si vous utilisez également [Check-Security](https://github.com/NephVx2/Check-Security) (un script d'audit en lecture seule du même auteur), sa section `-Category "TLS/SCHANNEL"` reprend exactement les mêmes contrôles que Harden-TLS — protocoles, chiffrements, hachages, Diffie-Hellman, .NET, et conflits GPO — ce qui permet de vérifier rapidement que rien n'a régressé sans avoir à relancer Harden-TLS. Attention, c'est en lecture seule : s'il détecte un problème, il faudra tout de même relancer Harden-TLS pour le corriger.
+9. *(Optionnel mais recommandé)* Quelques jours plus tard, ou après une mise à jour Windows, relancez le script — il affichera tout comme déjà conforme et n'appliquera aucun changement, confirmant que rien n'a réinitialisé votre durcissement. Si vous utilisez également [Check-Security](https://github.com/NephVx2/Check-Security) (un script d'audit en lecture seule du même auteur), sa section `-Category "TLS/SCHANNEL"` reprend exactement les mêmes contrôles que Harden-TLS — protocoles, chiffrements, hachages, Diffie-Hellman, .NET, et conflits GPO — ce qui permet de vérifier rapidement que rien n'a régressé sans avoir à relancer Harden-TLS. Attention, c'est en lecture seule : s'il détecte un problème, il faudra tout de même relancer Harden-TLS pour le corriger.
 
 Si vous préférez vous passer du menu et tout piloter en ligne de commande, voir tous les paramètres ci-dessous.
 

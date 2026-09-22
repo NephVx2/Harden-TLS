@@ -146,13 +146,33 @@ Without this step, hardening SCHANNEL alone leaves a real, documented blind spot
 
 ## Getting started — your first run
 
-Follow these steps in order. Every command below is safe to copy-paste as-is — none of the first three actually change anything on your PC.
+Follow these steps in order. Every command below is safe to copy-paste as-is — none of the first four actually change anything on your PC.
 
 1. **Copy `Harden-TLS.ps1`** onto the target machine.
 
-2. **Open PowerShell as Administrator.** You can still run the script without Administrator rights — it just switches to read-only mode and can't apply anything (steps 3 and 4 below work fine either way).
+2. **Open PowerShell as Administrator.**
 
-3. **Run the self-test first.** This writes nothing and changes nothing on your system — it only checks that the script itself is working correctly on your machine:
+   Then go to the folder that contains the script (adjust the path; keep the quotes if it contains spaces):
+
+   ```powershell
+   cd "$HOME\Downloads"
+   ```
+
+3. **Unblock the script** if you downloaded it from the Internet. Windows flags downloaded files, and PowerShell's execution policy (`RemoteSigned`, for example) refuses to run a flagged script. In that same Administrator window, from the script's folder:
+
+   ```powershell
+   Unblock-File .\Harden-TLS.ps1
+   ```
+
+   If PowerShell says instead that running scripts is disabled on this system (the Windows default policy is `Restricted`), allow scripts for the current account first (the change applies to this account only, not to the whole machine):
+
+   ```powershell
+   Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+   ```
+
+   Still blocked? See the [step-by-step guide](https://github.com/NephVx2/Script-blocked-Look-at-this).
+
+4. **Run the self-test first.** This writes nothing and changes nothing on your system — it only checks that the script itself is working correctly on your machine:
 
    ```powershell
    .\Harden-TLS.ps1 -SelfTest
@@ -160,7 +180,7 @@ Follow these steps in order. Every command below is safe to copy-paste as-is —
 
    This runs the script's internal test suite (scoring logic, report handling — no registry access at all). Exit code `0` = everything passed.
 
-4. **Preview what would change**, still without writing anything:
+5. **Preview what would change**, still without writing anything:
 
    ```powershell
    .\Harden-TLS.ps1 -DryRun
@@ -168,7 +188,7 @@ Follow these steps in order. Every command below is safe to copy-paste as-is —
 
    This lists every setting that isn't compliant yet and exactly what would be written to fix it — nothing is actually applied.
 
-5. **Launch the interactive menu** — just run the script with no options at all:
+6. **Launch the interactive menu** — just run the script with no options at all:
 
    ```powershell
    .\Harden-TLS.ps1
@@ -178,15 +198,15 @@ Follow these steps in order. Every command below is safe to copy-paste as-is —
    - **Choose `1`** first — *"Show detailed state (read-only)"*. This is read-only: it just shows you exactly where your PC currently stands, control by control, before anything is touched.
    - Once you're comfortable with what's about to change, **choose `2`** — *"Apply hardening (only what's missing)"*. Only what's actually missing gets changed; anything already compliant is left alone.
 
-6. **Restart the computer** once you're done, so SCHANNEL picks up the new settings.
+7. **Restart the computer** once you're done, so SCHANNEL picks up the new settings.
 
-7. **For scheduled tasks or multi-machine deployment**, skip the menu entirely and run silently, generating a report you can check afterward instead of watching the console live:
+8. **For scheduled tasks or multi-machine deployment**, skip the menu entirely and run silently, generating a report you can check afterward instead of watching the console live:
 
    ```powershell
    .\Harden-TLS.ps1 -Silent -Html
    ```
 
-8. *(Optional but recommended)* A few days later, or after any Windows Update, re-run the script — it will show everything as already compliant and make no changes, confirming nothing reset your hardening. If you also run [Check-Security](https://github.com/NephVx2/Check-Security) (a companion read-only audit script by the same author), its `-Category "TLS/SCHANNEL"` section mirrors every check Harden-TLS controls — protocols, ciphers, hashes, Diffie-Hellman, .NET, and GPO conflicts — so a quick periodic Check-Security run can confirm nothing has regressed without opening Harden-TLS at all. It's read-only, though: if it does flag something, you'll still need to run Harden-TLS itself to fix it.
+9. *(Optional but recommended)* A few days later, or after any Windows Update, re-run the script — it will show everything as already compliant and make no changes, confirming nothing reset your hardening. If you also run [Check-Security](https://github.com/NephVx2/Check-Security) (a companion read-only audit script by the same author), its `-Category "TLS/SCHANNEL"` section mirrors every check Harden-TLS controls — protocols, ciphers, hashes, Diffie-Hellman, .NET, and GPO conflicts — so a quick periodic Check-Security run can confirm nothing has regressed without opening Harden-TLS at all. It's read-only, though: if it does flag something, you'll still need to run Harden-TLS itself to fix it.
 
 If you'd rather skip the menu and drive everything from the command line, see every option below.
 
